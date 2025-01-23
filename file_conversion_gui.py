@@ -17,94 +17,98 @@ class FileConversionTool:
         self.master.title("File Conversion Tool")
 
         # Make the window bigger
-        self.master.geometry("600x400")
+        self.master.geometry("800x600")
 
         # Set a background color for the main window
-        self.master.configure(bg="#f0f8ff")  # AliceBlue, for example
+        self.master.configure(bg="#333333")  # Dark gray for the window
 
         # Track selected file path
         self.file_path = None
+
+        # Create a container frame to center all elements
+        self.container = tk.Frame(self.master, bg="#333333")
+        self.container.pack(expand=True, fill='both')
 
         # GUI elements
         self.create_widgets()
 
     def create_widgets(self):
-        # Define a custom font. Tkinter will default if Papyrus is not installed.
-        # Feel free to try "Jokerman", "Lucida Handwriting", or any other font you prefer.
-        custom_font = ("Papyrus", 12)
+        # Define a more legible font
+        custom_font = ("Helvetica", 14)
 
         # Button to browse a file
         self.browse_btn = tk.Button(
-            self.master,
+            self.container,
             text="Select File",
             command=self.select_file,
-            bg="#7FFFD4",         # Aquamarine button color
-            fg="#000000",         # Black text
+            bg="#444444",         # Slightly lighter dark gray
+            fg="#FFFFFF",         # White text
             font=custom_font
         )
-        self.browse_btn.grid(row=0, column=0, padx=10, pady=10)
+        self.browse_btn.pack(pady=10, anchor="center")
 
         # Label to display the selected file
         self.file_label = tk.Label(
-            self.master,
+            self.container,
             text="No file selected",
-            bg="#f0f8ff",         # Match window background
-            fg="#000000",
+            bg="#333333",         # Match container background
+            fg="#FFFFFF",
             font=custom_font
         )
-        self.file_label.grid(row=0, column=1, padx=10, pady=10)
+        self.file_label.pack(pady=5, anchor="center")
 
         # Output format label
         self.output_format_label = tk.Label(
-            self.master,
+            self.container,
             text="Output Format:",
-            bg="#f0f8ff",
-            fg="#000000",
+            bg="#333333",
+            fg="#FFFFFF",
             font=custom_font
         )
-        self.output_format_label.grid(row=1, column=0, padx=10, pady=10)
+        self.output_format_label.pack(pady=5, anchor="center")
 
         # Dropdown for output format (images in this example)
         self.available_formats = ["PNG", "JPEG", "GIF", "BMP", "WEBP", "TIFF"]
         self.selected_format = tk.StringVar()
         self.selected_format.set(self.available_formats[0])  # default value
-        
-        # OptionMenu can be tricky to style thoroughly, but we can set some basics:
-        self.format_dropdown = tk.OptionMenu(self.master, self.selected_format, *self.available_formats)
+
+        # OptionMenu
+        self.format_dropdown = tk.OptionMenu(self.container, self.selected_format, *self.available_formats)
         self.format_dropdown.config(
-            bg="#7FFFD4",
-            fg="#000000",
-            activebackground="#98FB98",  # PaleGreen
+            bg="#444444",
+            fg="#FFFFFF",
+            activebackground="#555555",
+            activeforeground="#FFFFFF",
             font=custom_font
         )
-        # The underlying menu can be styled separately:
+        # Style the dropdown menu items
         self.format_dropdown["menu"].config(
-            bg="#7FFFD4",
-            fg="#000000",
+            bg="#444444",
+            fg="#FFFFFF",
             font=custom_font
         )
-        self.format_dropdown.grid(row=1, column=1, padx=10, pady=10)
+        self.format_dropdown.pack(pady=5)
 
         # Convert button
         self.convert_btn = tk.Button(
-            self.master,
+            self.container,
             text="Convert",
             command=self.convert_file,
-            bg="#7FFFD4",
-            fg="#000000",
+            bg="#444444",
+            fg="#FFFFFF",
             font=custom_font
         )
-        self.convert_btn.grid(row=2, column=0, columnspan=2, padx=10, pady=20)
+        self.convert_btn.pack(pady=10, anchor="center")
 
         # Status label
         self.status_label = tk.Label(
-            self.master,
+            self.container,
             text="",
-            bg="#f0f8ff",
-            fg="blue",
+            bg="#333333",
+            fg="#FFFFFF",
             font=custom_font
         )
-        self.status_label.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+        self.status_label.pack(pady=5, anchor="center")
 
     def select_file(self):
         file_path = filedialog.askopenfilename()
@@ -119,7 +123,7 @@ class FileConversionTool:
             return
 
         try:
-            # For demonstration, let's assume the file is an image.
+            # For demonstration, let's assume the file is an image
             with Image.open(self.file_path) as img:
                 output_format = self.selected_format.get()
                 base_name, _ = os.path.splitext(self.file_path)
@@ -128,14 +132,13 @@ class FileConversionTool:
                 img.save(output_file, output_format)
 
                 success_msg = f"File converted and saved as {output_file}"
-                self.status_label.config(text=success_msg, fg="green")
+                self.status_label.config(text=success_msg, fg="#00FF00")  # Green success text
                 logging.info(success_msg)
-
                 messagebox.showinfo("Conversion Successful", success_msg)
 
         except Exception as e:
             error_msg = f"Conversion failed: {e}"
-            self.status_label.config(text=error_msg, fg="red")
+            self.status_label.config(text=error_msg, fg="#FF0000")  # Red error text
             logging.error(error_msg, exc_info=True)
             messagebox.showerror(
                 "Conversion Error",
